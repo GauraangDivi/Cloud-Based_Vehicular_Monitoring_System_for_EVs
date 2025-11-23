@@ -2,7 +2,7 @@
 """
 Tata Nexon EV Digital Twin - Real-time RT-Operation Version
 Smooth continuous updates using @st.fragment
-Max battery temperature: 60°C
+No full-page refresh, only metrics update
 """
 
 import streamlit as st
@@ -139,10 +139,9 @@ class TataNexonBMS:
         elif self.voltage > self.config['max_voltage']:
             warnings.append("Warning: High voltage")
 
-        # Changed max temperature limit to 60°C
-        if self.temperature > 60:
+        if self.temperature > 55:
             errors.append("CRITICAL: Battery overheating")
-        elif self.temperature > 50:
+        elif self.temperature > 45:
             warnings.append("Warning: High temperature")
 
         if self.temperature < 0:
@@ -791,12 +790,11 @@ def main():
         with col2:
             st.markdown("#### Thermal System")
             thermal_df = pd.DataFrame({
-                "System": ["Liquid Cooling", "Battery Heating", "Temp Limit", "Status"],
+                "System": ["Liquid Cooling", "Battery Heating", "Status"],
                 "State": [
                     "🟢 Active" if state['bms']['cooling_active'] else "⚪ Standby",
                     "🟢 Active" if state['bms']['heating_active'] else "⚪ Standby",
-                    "Max 60°C",
-                    "🟢 Normal" if 15 <= state['bms']['temperature'] <= 50 else "⚠️ Sub-optimal"
+                    "🟢 Normal" if 15 <= state['bms']['temperature'] <= 45 else "⚠️ Sub-optimal"
                 ]
             })
             st.dataframe(thermal_df, hide_index=True, use_container_width=True)
@@ -807,7 +805,6 @@ def main():
             **Capacity:** {ev.config['capacity_kwh']} kWh
             **Voltage:** {ev.config['nominal_voltage']}V
             **Cooling:** Liquid cooling
-            **Max Temp:** 60°C
             """)
 
         # SOC-OCV Curve
@@ -966,7 +963,7 @@ def main():
     st.markdown("""
     <div style='text-align: center; color: #0D47A1;'>
         <p><strong>Tata Nexon EV Digital Twin - RT Operation</strong></p>
-        <p style='font-size: 0.9em;'>⚡ Real-time auto-refresh every 0.5 seconds | Max Battery Temp: 60°C</p>
+        <p style='font-size: 0.9em;'>⚡ Real-time auto-refresh every 0.5 seconds</p>
     </div>
     """, unsafe_allow_html=True)
 
